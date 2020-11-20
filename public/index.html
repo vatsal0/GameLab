@@ -1,0 +1,51 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <title>Rooms</title>
+    
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.5.9/dist/css/uikit.min.css" />
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.5.9/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.5.9/dist/js/uikit-icons.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.1/socket.io.js"></script>
+  </head>
+
+  <body>
+    <h1 style="text-align: center; margin-top: 4em">Join or Start a room</h1>
+    <div class="uk-container uk-container-xsmall uk-background-secondary">
+      <div class="uk-grid uk-child-width-expand">
+        <div>
+          <input class="uk-input" type="text" placeholder="Room Code" id="roomCode">
+          <button class="uk-button uk-button-primary uk-align-center" onclick="joinRoom()">Join</button>
+        </div>
+        <div>
+          <button class="uk-button uk-button-large uk-button-primary uk-align-center" onclick="createRoom()">Create Room</button>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    $(document).ready(async function() {
+      socket = io();
+  
+      socket.on('connectionAccepted', (player1) => {
+        window.location.href = '/game.html';
+        localStorage.setItem('turn', player1);
+      });
+      localStorage.setItem('socket', socket);
+      console.log('Socket initialized');
+    })
+    
+    function createRoom() {
+
+    }
+
+    function joinRoom() {
+      let roomCode = $('#roomCode').val();
+      socket.emit('joinRequest',roomCode);
+    }
+  </script>
+</html>
