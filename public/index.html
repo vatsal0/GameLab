@@ -28,24 +28,14 @@
   </body>
 
   <script>
-    $(document).ready(async function() {
-      socket = io();
-  
-      socket.on('connectionAccepted', (player1) => {
-        window.location.href = '/game.html';
-        localStorage.setItem('turn', player1);
-      });
-      localStorage.setItem('socket', socket);
-      console.log('Socket initialized');
-    })
-    
     function createRoom() {
 
     }
 
     function joinRoom() {
       let roomCode = $('#roomCode').val();
-      socket.emit('joinRequest',roomCode);
+      window.location.href = '/game.html';
+      localStorage.setItem('roomCode', roomCode);
     }
   </script>
 </html>
