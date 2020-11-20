@@ -13,25 +13,18 @@
   </head>
 
   <body>
-    <h1 style="text-align: center; margin-top: 4em">Join or Start a room</h1>
+    <h1 style="text-align: center; margin-top: 4em">Connect 4 Game Lab</h1>
     <div class="uk-container uk-container-xsmall uk-background-secondary">
       <div class="uk-grid uk-child-width-expand">
         <div>
-          <input class="uk-input" type="text" placeholder="Room Code" id="roomCode">
+          <input class="uk-input" type="text" placeholder="Enter a pre-existing room code, or write a new one" id="roomCode">
           <button class="uk-button uk-button-primary uk-align-center" onclick="joinRoom()">Join</button>
-        </div>
-        <div>
-          <button class="uk-button uk-button-large uk-button-primary uk-align-center" onclick="createRoom()">Create Room</button>
         </div>
       </div>
     </div>
   </body>
 
   <script>
-    function createRoom() {
-
-    }
-
     function joinRoom() {
       let roomCode = $('#roomCode').val();
       window.location.href = '/game.html';
