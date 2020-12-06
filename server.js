@@ -18,13 +18,21 @@ io.on('connection', (socket) => {
   socket.on('joinRequest', (code) => {
     console.log('Request to join: ' + code);
     if(!rooms[code]) {
+      columns = new Array();
+      for(i=0; i<7; i++) {
+        columns[i] = new Array();
+        for(j=0; j<6; j++) {
+          columns[i][j] = 0;
+        }
+      }
       current = {
         players: [],
-        turn: 0,
+        turn: 1,
+        board: columns,
       };
       rooms[code] = current;
 
-      socket.turn = 0;
+      socket.turn = 1;
       socket.emit('connectionAccepted', true);
 
     } else if(rooms[code].players.length >= 2) {
@@ -36,7 +44,7 @@ io.on('connection', (socket) => {
       console.log('Existing room detected');
       current = rooms[code];
       
-      socket.turn = 1;
+      socket.turn = 2;
       socket.emit('connectionAccepted', false);
     }
   
@@ -44,14 +52,23 @@ io.on('connection', (socket) => {
     current.players.push(socket); 
   });
 
-  socket.on('toggle', (coords) => {
+  socket.on('toggleCol', (col) => {
     if(socket.turn !== socket.room.turn) return;
     if(socket.room.players.length !== 2) return;
 
-    socket.emit('selfToggle', coords);
-    socket.room.players[(socket.turn + 1) % 2].emit('opponentToggle', coords);
+    columns = socket.room.board;
 
-    socket.room.turn = ((socket.room.turn + 1) % 2);
+    for(spot=0; spot<6; spot++) {
+      if(columns[col][spot] === 0) {
+        columns[col][spot] = socket.turn;
+        socket.emit('toggleCell', {coords: [col,spot], color: 'blue'});
+        socket.room.players[(socket.turn % 2)].emit('toggleCell', {coords: [col,spot], color: 'red'});
+
+        socket.room.turn = ((socket.room.turn % 2) + 1);
+
+        return;
+      }
+    }
   });
 });
 

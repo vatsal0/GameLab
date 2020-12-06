@@ -16,18 +16,13 @@ $(document).ready(function () {
     localStorage.setItem('roomCode', null);
   });
   
-  socket.on('selfToggle', (coords) => {
-    $(`#${coords[0]}${coords[1]}`).css('background-color', 'blue');
+  socket.on('toggleCell', (data) => {
+    $(`#${data.coords[0]}${data.coords[1]}`).css('background-color', data.color);
     turn = !turn;
-  });
-
-  socket.on('opponentToggle', (coords) => {
-    turn = !turn;
-    $(`#${coords[0]}${coords[1]}`).css('background-color', 'red');
   });
 });
 
-function toggleSquare(x, y) {
+function toggle(c) {
   if(!turn) return;
-  socket.emit('toggle', [x,y]);
+  socket.emit('toggleCol', c);
 }
