@@ -22,7 +22,7 @@ $(document).ready(function () {
   });
 
   socket.on('winner', (winner) => {
-    console.log(winner);
+    $(`#status`).text(`Player ${winner} wins!`);
   });
 });
 
