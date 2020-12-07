@@ -20,6 +20,10 @@ $(document).ready(function () {
     $(`#${data.coords[0]}${data.coords[1]}`).css('background-color', data.color);
     turn = !turn;
   });
+
+  socket.on('winner', (winner) => {
+    console.log(winner);
+  });
 });
 
 function toggle(c) {
