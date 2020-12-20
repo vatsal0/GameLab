@@ -25,7 +25,11 @@ $(document).ready(function () {
   socket.on('winner', (won) => {
     $(`#status`).text(won ? "You win!" : "You lose!");
   });
-  
+
+  socket.on('draw', () => {
+    $(`#status`).text("Draw");
+  });
+
   socket.on('turn', (turn) => {
     $(`#status`).text(turn ? "Your turn" : "Opponent's turn");
   });
