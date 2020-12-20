@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
       socket.turn = 1;
       socket.emit('connectionAccepted', true);
 
-    } else if(rooms[code].players.length >= 2) {
+    } else if(rooms[code].players.length >= 2 || rooms[code].players.length == -1) {
       console.log('Requested room full!');
       socket.emit('connectionRejected');
       return;
@@ -110,6 +110,20 @@ io.on('connection', (socket) => {
         }
         return;
       }
+    }
+  });
+
+  socket.on('disconnect', () => {
+    if(socket.room) {
+        if(socket == socket.room.players[0]) {
+            socket.room.players.splice(0,1);
+            socket.room.winner = -1;
+            if(socket.room.players.length > 0) socket.room.players[0].emit('left');
+        } else if(socket == socket.room.players[1]) {
+            socket.room.players.splice(1,1);
+            socket.room.winner = -1;
+            if(socket.room.players.length > 0) socket.room.players[0].emit('left');
+        }
     }
   });
 });

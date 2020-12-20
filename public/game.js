@@ -30,6 +30,10 @@ $(document).ready(function () {
     $(`#status`).text("Draw");
   });
 
+  socket.on('left', () => {
+    $(`#status`).text("Opponent left");
+  });
+
   socket.on('turn', (turn) => {
     $(`#status`).text(turn ? "Your turn" : "Opponent's turn");
   });
