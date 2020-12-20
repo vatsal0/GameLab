@@ -15,36 +15,19 @@ var COLUMN_LENGTH = 6;
 app.use(express.static('public'))
 
 function winner(board) {
-  p1Cells = {};
-  p2Cells = {};
   for(i=0; i<ROW_LENGTH; i++) {
     for(j=0; j<COLUMN_LENGTH; j++) {
-      if(board[i][j] == 1) {
-        p1Cells[i*COLUMN_LENGTH+j] = true;
+      if(board[i][j] === 1) {
+          if(board[i] && board[i][j+1] === 1 && board[i] && board[i][j+2] === 1 && board[i] && board[i][j+3] === 1) return 1;
+          if(board[i+1] && board[i+1][j] === 1 && board[i+2] && board[i+2][j] === 1 && board[i+3] && board[i+3][j] === 1) return 1;
+          if(board[i+1] && board[i+1][j+1] === 1 && board[i+2] && board[i+2][j+2] === 1 && board[i+3] && board[i+3][j+3] === 1) return 1;
+          if(board[i+1] && board[i+1][j-1] === 1 && board[i+2] && board[i+2][j-2] === 1 && board[i+3] && board[i+3][j-3] === 1) return 1;
       } else if(board[i][j] == 2) {
-        p2Cells[i*COLUMN_LENGTH+j] = true;
+        if(board[i] && board[i][j+1] === 2 && board[i] && board[i][j+2] === 2 && board[i] && board[i][j+3] === 2) return 2;
+        if(board[i+1] && board[i+1][j] === 2 && board[i+2] && board[i+2][j] === 2 && board[i+3] && board[i+3][j] === 2) return 2;
+        if(board[i+1] && board[i+1][j+1] === 2 && board[i+2] && board[i+2][j+2] === 2 && board[i+3] && board[i+3][j+3] === 2) return 2;
+        if(board[i+1] && board[i+1][j-1] === 2 && board[i+2] && board[i+2][j-2] === 2 && board[i+3] && board[i+3][j-3] === 2) return 2; 
       }
-    }
-  }
-  for(i=0; i<42; i++) {
-    if(i in p1Cells && i+1 in p1Cells && i+2 in p1Cells && i+3 in p1Cells) {
-      return 1;
-    } else if(i in p1Cells && i+5 in p1Cells && i+10 in p1Cells && i+15 in p1Cells) {
-      return 1;
-    } else if(i in p1Cells && i+6 in p1Cells && i+12 in p1Cells && i+18 in p1Cells) {
-      return 1;
-    } else if(i in p1Cells && i+7 in p1Cells && i+14 in p1Cells && i+21 in p1Cells) {
-      return 1;
-    }
-    
-    if(i in p2Cells && i+1 in p2Cells && i+2 in p2Cells && i+3 in p2Cells) {
-      return 2;
-    } else if(i in p2Cells && i+5 in p2Cells && i+10 in p2Cells && i+15 in p2Cells) {
-      return 2;
-    } else if(i in p2Cells && i+6 in p2Cells && i+12 in p2Cells && i+18 in p2Cells) {
-      return 2;
-    } else if(i in p2Cells && i+7 in p2Cells && i+14 in p2Cells && i+21 in p2Cells) {
-      return 2;
     }
   }
   return 0;
@@ -85,6 +68,9 @@ io.on('connection', (socket) => {
       
       socket.turn = 2;
       socket.emit('connectionAccepted', false);
+
+      socket.emit('turn', false);
+      current.players[0].emit('turn', true);
     }
   
     socket.room = current;
@@ -106,7 +92,13 @@ io.on('connection', (socket) => {
 
         socket.room.turn = ((socket.room.turn % 2) + 1);
         socket.room.winner = winner(columns);
-        if(socket.room.winner != 0) io.emit("winner", socket.room.winner);
+        if(socket.room.winner != 0) {
+            socket.room.players[socket.room.winner - 1].emit('winner', true);
+            socket.room.players[2 - socket.room.winner].emit('winner', false);
+        } else {
+            socket.emit('turn', false);
+            socket.room.players[(socket.room.turn + 1) % 2].emit('turn', true);
+        }
         return;
       }
     }

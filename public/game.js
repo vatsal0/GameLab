@@ -8,6 +8,7 @@ $(document).ready(function () {
 
   socket.on('connectionAccepted', (player1) => {
     turn = player1;
+    $(`#status`).text(`Waiting for players`);
   });
 
   socket.on('connectionRejected', () => {
@@ -21,8 +22,12 @@ $(document).ready(function () {
     turn = !turn;
   });
 
-  socket.on('winner', (winner) => {
-    $(`#status`).text(`Player ${winner} wins!`);
+  socket.on('winner', (won) => {
+    $(`#status`).text(won ? "You win!" : "You lose!");
+  });
+  
+  socket.on('turn', (turn) => {
+    $(`#status`).text(turn ? "Your turn" : "Opponent's turn");
   });
 });
 
