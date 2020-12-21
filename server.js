@@ -51,6 +51,7 @@ io.on('connection', (socket) => {
         }
       }
       current = {
+        roomCode: code,
         players: [],
         turn: 1,
         board: columns,
@@ -97,16 +98,16 @@ io.on('connection', (socket) => {
         socket.room.turn = ((socket.room.turn % 2) + 1);
         socket.room.winner = winner(columns);
         if(socket.room.winner != 0) {
-            if (socket.room.winner == 3) {
-                socket.room.players[0].emit('draw');
-                socket.room.players[1].emit('draw'); 
-            } else {
-                socket.room.players[socket.room.winner - 1].emit('winner', true);
-                socket.room.players[2 - socket.room.winner].emit('winner', false);
-            }
+          if (socket.room.winner == 3) {
+            socket.room.players[0].emit('draw');
+            socket.room.players[1].emit('draw'); 
+          } else {
+            socket.room.players[socket.room.winner - 1].emit('winner', true);
+            socket.room.players[2 - socket.room.winner].emit('winner', false);
+          }
         } else {
-            socket.emit('turn', false);
-            socket.room.players[(socket.room.turn + 1) % 2].emit('turn', true);
+          socket.emit('turn', false);
+          socket.room.players[(socket.room.turn + 1) % 2].emit('turn', true);
         }
         return;
       }
@@ -115,15 +116,18 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     if(socket.room) {
-        if(socket == socket.room.players[0]) {
-            socket.room.players.splice(0,1);
-            socket.room.winner = -1;
-            if(socket.room.players.length > 0) socket.room.players[0].emit('left');
-        } else if(socket == socket.room.players[1]) {
-            socket.room.players.splice(1,1);
-            socket.room.winner = -1;
-            if(socket.room.players.length > 0) socket.room.players[0].emit('left');
-        }
+      if(socket == socket.room.players[0]) {
+        socket.room.players.splice(0,1);
+        socket.room.winner = -1;
+      } else if(socket == socket.room.players[1]) {
+        socket.room.players.splice(1,1);
+        socket.room.winner = -1;
+      }
+      if(socket.room.players.length > 0) {
+        socket.room.players[0].emit('left');
+      } else {
+        delete rooms[socket.room.roomCode];
+      }
     }
   });
 });
